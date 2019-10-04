@@ -1,22 +1,22 @@
-import datetime as dt
-import numpy as np
-import pandas as pd
+# import datetime as dt
+# import numpy as np
+# import pandas as pd
 
-import sqlalchemy
-from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, func
+# import sqlalchemy
+# from sqlalchemy.ext.automap import automap_base
+# from sqlalchemy.orm import Session
+# from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
-engine = create_engine("sqlite:///hawaii.sqlite")
-Base = automap_base()
-Base.prepare(engine, reflect=True)
+# engine = create_engine("sqlite:///hawaii.sqlite")
+# Base = automap_base()
+# Base.prepare(engine, reflect=True)
 
-Measurement = Base.classes.measurement
-Station = Base.classes.station
+# Measurement = Base.classes.measurement
+# Station = Base.classes.station
 
-session = Session(engine)
+# session = Session(engine)
 
 app = Flask(__name__)
 # * `/`
@@ -55,6 +55,7 @@ def precipitation():
     results = session.query(Measurement.date, Measurement.tobs).\
         filter(Measurement.date >= "2016-08-24", Measurement.date <= "2017-08-23").\
         all()
+    session.close()
 # * Return the JSON representation of your dictionary.
     precipitation_list = [results]
 
@@ -65,6 +66,7 @@ def precipitation():
 def stations():
     """Return a list of stations"""
     results = session.query(Station.name, Station.station, Station.elevation).all()
+    session.close()
 #   * Return a JSON list of stations from the dataset.
     station_list = []
     for result in results:
@@ -83,6 +85,7 @@ def temp_obs():
     results = session.query(Station.name, Measurement.date, Measurement.tobs).\
         filter(Measurement.date >= "2016-08-24", Measurement.date <= "2017-08-23").\
         all()
+    session.close()
 #   * Return a JSON list of Temperature Observations (tobs) for the previous year.
     tobs_list = []
     for result in results:
@@ -98,6 +101,7 @@ def query_dates(start_date):
     """Return the avg, max, min, temp over a specific start date"""
     results = session.query(func.avg(Measurement.tobs), func.max(Measurement.tobs), func.min(Measurement.tobs)).\
         filter(Measurement.date >= start_date).all()
+    session.close()
 #   * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start date.
     data_list = []
     for result in results:
@@ -116,6 +120,7 @@ def query_dates(start_date, end_date):
     """Return the avg, max, min, temp over a specific time period"""
     results = session.query(func.avg(Measurement.tobs), func.max(Measurement.tobs), func.min(Measurement.tobs)).\
         filter(Measurement.date >= start_date, Measurement.date <= end_date).all()
+    session.close()
 
 #   * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
     data_list = []
